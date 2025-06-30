@@ -1,6 +1,7 @@
 [build]
+  base = "frontend"
   command = "npm run build && npm run export"
-  publish = "frontend/out"
+  publish = "out"
 
 [[redirects]]
   from = "/api/*"
