@@ -1,10 +1,12 @@
+// This is the index (home) page for the site. Next.js requires this file to be named page.tsx in the app directory.
+
 'use client';
 
 import Link from 'next/link';
 import { Calendar, Clock, User, ArrowRight } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
-export default function HomePage() {
+export default function IndexPage() {
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(true);
 
