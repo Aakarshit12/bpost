@@ -1,36 +1,30 @@
+'use client';
+
 import Link from 'next/link';
-import { Metadata } from 'next';
 import { Calendar, Clock, User, ArrowRight } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
-export const metadata: Metadata = {
-    title: 'Home',
-    description: 'Welcome to our comprehensive blog website featuring the latest articles and insights.',
-    openGraph: {
-        title: 'Home | Blog',
-        description: 'Welcome to our comprehensive blog website featuring the latest articles and insights.',
-    },
-};
+export default function HomePage() {
+    const [posts, setPosts] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-async function getFeaturedPosts() {
-    try {
-        const res = await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/posts?limit=6&status=published`, {
-            cache: 'no-store'
-        });
-
-        if (!res.ok) {
-            throw new Error('Failed to fetch posts');
+    useEffect(() => {
+        async function fetchPosts() {
+            try {
+                const res = await fetch('/api/posts?limit=6&status=published');
+                if (res.ok) {
+                    const data = await res.json();
+                    setPosts(data.posts || []);
+                }
+            } catch (error) {
+                console.error('Error fetching posts:', error);
+            } finally {
+                setLoading(false);
+            }
         }
 
-        const data = await res.json();
-        return data.posts || [];
-    } catch (error) {
-        console.error('Error fetching featured posts:', error);
-        return [];
-    }
-}
-
-export default async function HomePage() {
-    const posts = await getFeaturedPosts();
+        fetchPosts();
+    }, []);
 
     return (
         <div className="min-h-screen">
@@ -75,7 +69,11 @@ export default async function HomePage() {
                         </p>
                     </div>
 
-                    {posts.length > 0 ? (
+                    {loading ? (
+                        <div className="text-center py-12">
+                            <p className="text-gray-600 text-lg">Loading posts...</p>
+                        </div>
+                    ) : posts.length > 0 ? (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                             {posts.map((post: any) => (
                                 <article key={post._id} className="card hover:shadow-lg transition-shadow duration-300">
@@ -201,7 +199,7 @@ export default async function HomePage() {
                             </div>
                             <h3 className="text-xl font-semibold text-gray-900 mb-2">Rich Content</h3>
                             <p className="text-gray-600">
-                                Advanced rich text editor with comprehensive formatting options.
+                                Engaging articles with rich formatting and multimedia support.
                             </p>
                         </div>
                     </div>
