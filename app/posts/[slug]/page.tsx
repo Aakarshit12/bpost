@@ -191,4 +191,11 @@ export default async function PostPage({ params }: PostPageProps) {
             </article>
         </div>
     );
+}
+
+// If you want to use static export, you must provide all possible slugs here.
+// For SSR/serverless, this is not required and can be omitted.
+export async function generateStaticParams() {
+    // Example: return [{ slug: 'example-post-1' }, { slug: 'example-post-2' }];
+    return [];
 } 
