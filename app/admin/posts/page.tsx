@@ -6,11 +6,6 @@ import Link from 'next/link';
 import { Plus, Search, Filter, Calendar, FileText } from 'lucide-react';
 import AdminPostsTable from './AdminPostsTable';
 
-export const metadata: Metadata = {
-    title: 'Manage Posts',
-    description: 'Admin panel for managing blog posts.',
-};
-
 export default function AdminPostsPage() {
     const [posts, setPosts] = useState([]);
     const [pagination, setPagination] = useState({ currentPage: 1, totalPages: 1, totalPosts: 0, limit: 10 });
