@@ -1,1 +1,18 @@
- 
+[build]
+  command = "npm run build && npm run export"
+  publish = "frontend/out"
+
+[[redirects]]
+  from = "/api/*"
+  to = "/api/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/posts/*"
+  to = "/posts/[slug]"
+  status = 200
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200 

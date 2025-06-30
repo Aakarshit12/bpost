@@ -1,0 +1,4 @@
+# public/_redirects
+/api/*  /api/:splat  200
+/posts/* /posts/[slug] 200
+/*      /index.html   200 
