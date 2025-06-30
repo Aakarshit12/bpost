@@ -1,0 +1,15 @@
+{
+  "/_not-found/page": "app/_not-found/page.js",
+  "/admin/posts/new/page": "app/admin/posts/new/page.js",
+  "/api/robots/route": "app/api/robots/route.js",
+  "/posts/[slug]/page": "app/posts/[slug]/page.js",
+  "/test/page": "app/test/page.js",
+  "/api/posts/route": "app/api/posts/route.js",
+  "/admin/posts/page": "app/admin/posts/page.js",
+  "/admin/page": "app/admin/page.js",
+  "/api/posts/[slug]/route": "app/api/posts/[slug]/route.js",
+  "/api/sitemap/route": "app/api/sitemap/route.js",
+  "/api/rss/route": "app/api/rss/route.js",
+  "/page": "app/page.js",
+  "/posts/page": "app/posts/page.js"
+}

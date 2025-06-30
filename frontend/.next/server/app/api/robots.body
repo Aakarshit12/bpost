@@ -1,0 +1,16 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: http://localhost:3000/sitemap.xml
+
+# Disallow admin areas
+Disallow: /admin/
+Disallow: /api/
+
+# Allow public content
+Allow: /posts/
+Allow: /rss.xml
+
+# Crawl delay (optional)
+Crawl-delay: 1
