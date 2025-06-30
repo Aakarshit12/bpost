@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import Link from 'next/link';
 import { Metadata } from 'next';
 import { Plus, Edit, Trash2, Eye, BarChart3, FileText, Users, Calendar } from 'lucide-react';
