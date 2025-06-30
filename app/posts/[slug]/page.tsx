@@ -9,7 +9,7 @@ interface PostPageProps {
 
 async function getPost(slug: string) {
     try {
-        const res = await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/posts/${slug}`, {
+        const res = await fetch(`/api/posts/${slug}`, {
             cache: 'no-store'
         });
 

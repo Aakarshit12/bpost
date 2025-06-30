@@ -5,7 +5,7 @@ export async function GET() {
 Allow: /
 
 # Sitemap
-Sitemap: ${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/sitemap.xml
+Sitemap: ${process.env.NEXTAUTH_URL || 'https://your-production-domain.com'}/sitemap.xml
 
 # Disallow admin areas
 Disallow: /admin/

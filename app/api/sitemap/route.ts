@@ -17,7 +17,7 @@ export async function GET() {
       .sort({ updatedAt: -1 })
       .lean();
 
-    const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
+    const baseUrl = process.env.NEXTAUTH_URL || 'https://your-production-domain.com';
 
     // Generate XML sitemap
     const sitemap = `<?xml version="1.0" encoding="UTF-8"?>

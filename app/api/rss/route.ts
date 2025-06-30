@@ -18,7 +18,7 @@ export async function GET() {
             .limit(20)
             .lean();
 
-        const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
+        const baseUrl = process.env.NEXTAUTH_URL || 'https://your-production-domain.com';
 
         // Generate RSS feed
         const rss = `<?xml version="1.0" encoding="UTF-8"?>
@@ -49,12 +49,10 @@ export async function GET() {
                 'Cache-Control': 'public, max-age=3600, s-maxage=3600'
             }
         });
-
     } catch (error) {
-        console.error('RSS generation error:', error);
-        return NextResponse.json(
-            { error: 'Failed to generate RSS feed' },
-            { status: 500 }
-        );
+        console.error('Error generating RSS feed:', error);
+        return new NextResponse('Error generating RSS feed', {
+            status: 500
+        });
     }
-} 
+}

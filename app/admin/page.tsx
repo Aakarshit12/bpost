@@ -10,9 +10,9 @@ export const metadata: Metadata = {
 async function getDashboardStats() {
     try {
         const [postsRes, publishedRes, draftRes] = await Promise.all([
-            fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/posts?limit=1`, { cache: 'no-store' }),
-            fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/posts?status=published&limit=1`, { cache: 'no-store' }),
-            fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/posts?status=draft&limit=1`, { cache: 'no-store' })
+            fetch(`/api/posts?limit=1`, { cache: 'no-store' }),
+            fetch(`/api/posts?status=published&limit=1`, { cache: 'no-store' }),
+            fetch(`/api/posts?status=draft&limit=1`, { cache: 'no-store' })
         ]);
 
         const [postsData, publishedData, draftData] = await Promise.all([
@@ -168,10 +168,10 @@ export default async function AdminDashboard() {
                                                 {new Date(post.createdAt).toLocaleDateString()}
                                             </span>
                                             <span className={`px-2 py-1 rounded-full text-xs font-medium ${post.status === 'published'
-                                                    ? 'bg-green-100 text-green-800'
-                                                    : post.status === 'draft'
-                                                        ? 'bg-yellow-100 text-yellow-800'
-                                                        : 'bg-gray-100 text-gray-800'
+                                                ? 'bg-green-100 text-green-800'
+                                                : post.status === 'draft'
+                                                    ? 'bg-yellow-100 text-yellow-800'
+                                                    : 'bg-gray-100 text-gray-800'
                                                 }`}>
                                                 {post.status}
                                             </span>
