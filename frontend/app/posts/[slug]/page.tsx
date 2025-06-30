@@ -196,6 +196,9 @@ export default async function PostPage({ params }: PostPageProps) {
 // If you want to use static export, you must provide all possible slugs here.
 // For SSR/serverless, this is not required and can be omitted.
 export async function generateStaticParams() {
-    // Example: return [{ slug: 'example-post-1' }, { slug: 'example-post-2' }];
-    return [];
+    // Fetch all posts to generate static paths
+    const res = await fetch('https://your-api-endpoint.com/api/posts', { cache: 'no-store' });
+    if (!res.ok) return [];
+    const data = await res.json();
+    return data.posts.map((post: { slug: string }) => ({ slug: post.slug }));
 } 
