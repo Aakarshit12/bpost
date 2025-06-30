@@ -1,3 +1,6 @@
+'use client';
+
+import { useEffect, useState } from 'react';
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { Plus, Search, Filter, Calendar, FileText } from 'lucide-react';
@@ -8,43 +11,48 @@ export const metadata: Metadata = {
     description: 'Admin panel for managing blog posts.',
 };
 
-interface AdminPostsPageProps {
-    searchParams: {
-        page?: string;
-        search?: string;
-        status?: string;
-        sortBy?: string;
-        sortOrder?: string;
-    };
-}
+export default function AdminPostsPage() {
+    const [posts, setPosts] = useState([]);
+    const [pagination, setPagination] = useState({ currentPage: 1, totalPages: 1, totalPosts: 0, limit: 10 });
+    const [loading, setLoading] = useState(true);
+    const [search, setSearch] = useState('');
+    const [status, setStatus] = useState('');
+    const [sortBy, setSortBy] = useState('createdAt');
+    const [sortOrder, setSortOrder] = useState('desc');
 
-async function getAdminPosts(searchParams: AdminPostsPageProps['searchParams']) {
-    try {
-        const params = new URLSearchParams();
+    useEffect(() => {
+        async function fetchPosts() {
+            setLoading(true);
+            try {
+                const params = new URLSearchParams();
+                if (search) params.append('search', search);
+                if (status) params.append('status', status);
+                if (sortBy) params.append('sortBy', sortBy);
+                if (sortOrder) params.append('sortOrder', sortOrder);
+                params.append('page', pagination.currentPage.toString());
 
-        if (searchParams.page) params.append('page', searchParams.page);
-        if (searchParams.search) params.append('search', searchParams.search);
-        if (searchParams.status) params.append('status', searchParams.status);
-        if (searchParams.sortBy) params.append('sortBy', searchParams.sortBy);
-        if (searchParams.sortOrder) params.append('sortOrder', searchParams.sortOrder);
-
-        const res = await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/posts?${params.toString()}`, {
-            cache: 'no-store'
-        });
-
-        if (!res.ok) {
-            throw new Error('Failed to fetch posts');
+                const res = await fetch(`/api/posts?${params.toString()}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    setPosts(data.posts || []);
+                    setPagination({ ...pagination, ...data.pagination });
+                }
+            } catch (error) {
+                setPosts([]);
+                setPagination({ currentPage: 1, totalPages: 1, totalPosts: 0, limit: 10 });
+            } finally {
+                setLoading(false);
+            }
         }
+        fetchPosts();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [search, status, sortBy, sortOrder, pagination.currentPage]);
 
-        return await res.json();
-    } catch (error) {
-        console.error('Error fetching posts:', error);
-        return { posts: [], pagination: { currentPage: 1, totalPages: 1, totalPosts: 0 } };
+    function handleFilterSubmit(e: React.FormEvent) {
+        e.preventDefault();
+        setPagination({ ...pagination, currentPage: 1 });
+        // fetchPosts will be triggered by useEffect
     }
-}
-
-export default async function AdminPostsPage({ searchParams }: AdminPostsPageProps) {
-    const { posts, pagination } = await getAdminPosts(searchParams);
 
     return (
         <div className="min-h-screen bg-gray-50">
@@ -66,21 +74,23 @@ export default async function AdminPostsPage({ searchParams }: AdminPostsPagePro
 
                 {/* Filters and Search */}
                 <div className="card mb-8">
-                    <form className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <form className="grid grid-cols-1 md:grid-cols-4 gap-4" onSubmit={handleFilterSubmit}>
                         <div className="relative">
                             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                             <input
                                 type="text"
                                 name="search"
                                 placeholder="Search posts..."
-                                defaultValue={searchParams.search}
+                                value={search}
+                                onChange={e => setSearch(e.target.value)}
                                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                             />
                         </div>
 
                         <select
                             name="status"
-                            defaultValue={searchParams.status || ''}
+                            value={status}
+                            onChange={e => setStatus(e.target.value)}
                             className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                         >
                             <option value="">All Status</option>
@@ -91,7 +101,8 @@ export default async function AdminPostsPage({ searchParams }: AdminPostsPagePro
 
                         <select
                             name="sortBy"
-                            defaultValue={searchParams.sortBy || 'createdAt'}
+                            value={sortBy}
+                            onChange={e => setSortBy(e.target.value)}
                             className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                         >
                             <option value="createdAt">Created Date</option>
@@ -102,7 +113,8 @@ export default async function AdminPostsPage({ searchParams }: AdminPostsPagePro
 
                         <select
                             name="sortOrder"
-                            defaultValue={searchParams.sortOrder || 'desc'}
+                            value={sortOrder}
+                            onChange={e => setSortOrder(e.target.value)}
                             className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                         >
                             <option value="desc">Descending</option>
@@ -120,7 +132,11 @@ export default async function AdminPostsPage({ searchParams }: AdminPostsPagePro
                 </div>
 
                 {/* Posts Table */}
-                <AdminPostsTable posts={posts} />
+                {loading ? (
+                    <div className="text-center py-12 text-gray-600">Loading posts...</div>
+                ) : (
+                    <AdminPostsTable posts={posts} />
+                )}
 
                 {/* Pagination */}
                 {pagination.totalPages > 1 && (
@@ -130,12 +146,12 @@ export default async function AdminPostsPage({ searchParams }: AdminPostsPagePro
                         </div>
                         <div className="flex items-center gap-2">
                             {pagination.currentPage > 1 && (
-                                <Link
-                                    href={`/admin/posts?page=${pagination.currentPage - 1}${searchParams.search ? `&search=${searchParams.search}` : ''}${searchParams.status ? `&status=${searchParams.status}` : ''}`}
+                                <button
+                                    onClick={() => setPagination({ ...pagination, currentPage: pagination.currentPage - 1 })}
                                     className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
                                 >
                                     Previous
-                                </Link>
+                                </button>
                             )}
 
                             <span className="px-4 py-2 text-gray-600">
@@ -143,12 +159,12 @@ export default async function AdminPostsPage({ searchParams }: AdminPostsPagePro
                             </span>
 
                             {pagination.currentPage < pagination.totalPages && (
-                                <Link
-                                    href={`/admin/posts?page=${pagination.currentPage + 1}${searchParams.search ? `&search=${searchParams.search}` : ''}${searchParams.status ? `&status=${searchParams.status}` : ''}`}
+                                <button
+                                    onClick={() => setPagination({ ...pagination, currentPage: pagination.currentPage + 1 })}
                                     className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
                                 >
                                     Next
-                                </Link>
+                                </button>
                             )}
                         </div>
                     </div>
